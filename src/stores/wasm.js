@@ -1,4 +1,3 @@
-// stores/wasmStore.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { WasmClient } from '../wasm/client.js'; // Adjust the path as needed
@@ -27,31 +26,45 @@ export const useWasmStore = defineStore('wasmStore', () => {
         return wasmClient.value;
     };
 
+    const callWasmFunction = async (fn, ...args) => {
+        loading.value = true;
+        try {
+            const result = await fn(...args);  // Call the provided WebAssembly function
+            return result;
+        } catch (err) {
+            error.value = err.message || 'An error occurred during the WebAssembly call.';
+            console.error('WebAssembly Call Error:', err);
+            throw err;  // Rethrow the error to allow further handling
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const fetchStockCatalog = async () => {
         const client = await getWasmClient();
-        return await client.fetchStockCatalog();
+        return await callWasmFunction(() => client.fetchStockCatalog());  // Pass function reference
     };
 
     const fetchRecipeCatalog = async () => {
         const client = await getWasmClient();
-        return await client.fetchRecipeCatalog();
+        return await callWasmFunction(() => client.fetchRecipeCatalog());
     }
 
     const fetchItem = async (id) => {
         const client = await getWasmClient();
-        return await client.fetchItem(id);
+        return await callWasmFunction(() => client.fetchItem(id));
     }
 
     const fetchRecipe = async (id) => {
         const client = await getWasmClient();
-        return await client.fetchRecipe(id);
+        return await callWasmFunction(() => client.fetchRecipe(id));
     }
-
 
     return {
         wasmClient,
         loading,
         error,
+        callWasmFunction,
         fetchStockCatalog,
         fetchRecipeCatalog,
         fetchItem,

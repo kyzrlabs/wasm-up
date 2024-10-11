@@ -13,7 +13,7 @@ onMounted(() => {
   <main>
     <div v-if="stockStore.loading">Loading...</div>
     <div v-else-if="stockStore.error">{{ stockStore.error }}</div>
-    <div v-else>
+    <div v-if="stockStore.stockCatalog">
       <!-- Render the stock catalog -->
       <div v-for="(stocks, category) in stockStore.stockCatalog.categories" :key="category">
         {{ category }}

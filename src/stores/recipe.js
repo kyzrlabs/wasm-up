@@ -1,36 +1,22 @@
-// stores/stock.js
 import { defineStore } from 'pinia';
-import { useWasmStore } from './wasm.js';
-import {ref} from "vue"; // Import the wasmStore to access the initialized WasmClient
+import {computed, ref} from 'vue';
+import {useWasmStore} from "@/stores/wasm.js";
 
 export const useRecipeStore = defineStore('recipeStore', () => {
-    const wasmStore = useWasmStore();  // Access the wasmStore
+    const wasmStore = useWasmStore();  // Access the wasm client from the wasmStore
     const recipeCatalog = ref(null);
     const recipe = ref(null);
-    const loading = ref(true);
-    const error = ref(null);
+
+    const loading = computed(() => wasmStore.loading);  // Use computed for reactivity
+    const error = computed(() => wasmStore.error);  // Use computed for reactivity
 
     const fetchRecipeCatalog = async () => {
-        try {
-            recipeCatalog.value = await wasmStore.fetchRecipeCatalog();  // Fetch the stock catalog
-        } catch (err) {
-            error.value = 'Failed to fetch recipe catalog.';
-            console.error('Error fetching recipe catalog:', err);
-        } finally {
-            loading.value = false;
-        }
+        recipeCatalog.value = await wasmStore.fetchRecipeCatalog();
     };
 
     const fetchRecipe = async (id) => {
-        try {
-            recipe.value = await wasmStore.fetchRecipe(id);
-        } catch (err) {
-            error.value = 'Failed to fetch recipe.';
-            console.error('Error fetching recipe:', err);
-        } finally {
-            loading.value = false;
-        }
-    }
+        recipe.value = await wasmStore.fetchRecipe(id);  // Use the utility to call the function with arguments
+    };
 
     const clearRecipe = () => {
         recipe.value = null;
@@ -43,6 +29,6 @@ export const useRecipeStore = defineStore('recipeStore', () => {
         error,
         fetchRecipeCatalog,
         fetchRecipe,
-        clearRecipe,
+        clearRecipe
     };
 });
