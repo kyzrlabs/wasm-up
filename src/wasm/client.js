@@ -1,5 +1,4 @@
-import {Item, StockCatalog} from "@/entities/entities.js";
-
+//This could all be auto generated at some point
 export class WasmClient {
     constructor() {
         this.wasmModule = null;
@@ -20,7 +19,6 @@ export class WasmClient {
         });
     }
 
-    // Helper method to call the WebAssembly function fetchStockCatalog
     async fetchStockCatalog() {
         if (!this.wasmModule.fetchStockCatalog) {
             throw new Error("fetchStockCatalog is not available in the Wasm module");
@@ -29,7 +27,7 @@ export class WasmClient {
         const result = await this.wasmModule.fetchStockCatalog();
         const jsonData = JSON.parse(result);  // Return the parsed JSON
 
-        return new StockCatalog(jsonData.categories);
+        return jsonData;
     }
 
     async fetchItem(id) {
@@ -40,6 +38,28 @@ export class WasmClient {
         const result = await this.wasmModule.fetchItem(id);
         const jsonData = JSON.parse(result);  // Return the parsed JSON
 
-        return new Item(jsonData.id, jsonData.name, jsonData.contents, jsonData.calories_100g);
+        return jsonData;
+    }
+
+    async fetchRecipeCatalog() {
+        if (!this.wasmModule.fetchRecipeCatalog) {
+            throw new Error("fetchRecipes is not available in the Wasm module");
+        }
+
+        const result = await this.wasmModule.fetchRecipeCatalog();
+        const jsonData = JSON.parse(result);
+
+        return jsonData;
+    }
+
+    async fetchRecipe(id) {
+        if (!this.wasmModule.fetchRecipe) {
+            throw new Error("fetchRecipe is not available in the Wasm module");
+        }
+
+        const result = await this.wasmModule.fetchRecipe(id);
+        const jsonData = JSON.parse(result);
+
+        return jsonData;
     }
 }
